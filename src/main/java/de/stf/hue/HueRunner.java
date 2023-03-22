@@ -17,8 +17,8 @@ import static java.lang.Thread.sleep;
 
 public class HueRunner {
 	private static final Logger LOGGER = LoggerFactory.getLogger(HueRunner.class);
-	private static PHHueSDK HUE_SDK;
-	private static PHAccessPoint accessPoint;
+	protected static PHHueSDK HUE_SDK;
+	protected static PHAccessPoint accessPoint;
 	private static HueListener phsdkListener;
 
 	public HueRunner() {
