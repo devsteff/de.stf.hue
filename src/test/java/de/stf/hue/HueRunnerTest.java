@@ -21,23 +21,23 @@ class HueRunnerTest {
         return Stream.of(0,1,815,2,-1,4,4711,5,10,9);
     }
 
-    private void sleepaWhile(long time) {
+    private void sleepAWhile() {
         try {
-            Thread.sleep(time);
-        } catch(InterruptedException ex) {}
+            Thread.sleep(1000);
+        } catch(InterruptedException ignored) {}
     }
 
     @Test
     @Order(1)
     void testNoOne() {
-        sleepaWhile(1000);
+        sleepAWhile();
         assertNotNull(w.getHUE());
     }
 
     @Test
     @Order(2)
     void testNoTwo() {
-        sleepaWhile(1000);
+        sleepAWhile();
         assertNotNull(w.getHUE());
     }
 
@@ -46,11 +46,11 @@ class HueRunnerTest {
     @DisplayName("failingTest 😱")
     @Order(3)
     void failingTest(Integer valueToTest) {
-        sleepaWhile(1000);
+        sleepAWhile();
         try {
             assertTrue(valueToTest != 9);
         } catch (Throwable ex) {
-            if(valueToTest==9) w.main(null);
+            if(valueToTest==9) HueRunner.main(null);
             throw ex;
         }
     }

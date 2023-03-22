@@ -7,7 +7,7 @@
         </encoder>
     </appender>
 
-    <logger name="de.stf" level="warn">
+    <logger name="de.stf" level="debug">
         <appender-ref ref="STDOUT" />
     </logger>
     <logger name="com.philips" level="warn">
