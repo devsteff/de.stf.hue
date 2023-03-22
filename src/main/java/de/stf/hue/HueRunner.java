@@ -63,7 +63,7 @@ public class HueRunner {
 			LOGGER.debug("Bridge: {} {}", accessPoint.getBridgeId(), bridge);
 			List<PHLight> allLights = bridge.getResourceCache().getAllLights();
 			//remember states of all lights
-			Map<String, PHLightState> lightStates = rememberLightsAndStates(allLights);
+			Map<String, State> lightStates = rememberLightsAndStates(allLights);
 			//animation sequenz
             flicker(bridge, allLights, HueProperties.getLightFilter());
             //reset all lights to original state
@@ -81,18 +81,19 @@ public class HueRunner {
 		}
 	}
 
-	private static Map<String, PHLightState> rememberLightsAndStates(List<PHLight> allLights) {
-		Map<String, PHLightState> lightStates = new HashMap<>(allLights.size());
+	private static Map<String, State> rememberLightsAndStates(List<PHLight> allLights) {
+		Map<String, State> lightStates = new HashMap<>(allLights.size());
 		LOGGER.debug("List all known lights named '*{}*' and remember current state",
 			HueProperties.getLightFilter());
 		allLights
 			.stream()
 			.filter(light -> light.getName().contains(HueProperties.getLightFilter()))
 			.forEach(light -> {
-				PHLightState lastKnownLightState = light.getLastKnownLightState();
-				lightStates.put(light.getUniqueId(), lastKnownLightState);
-				LOGGER.debug("Light {} -{} is {}", light.getName(), light.getUniqueId(),
-					lastKnownLightState.isOn() ? "AN" : "AUS");
+				final PHLightState lastKnownLightState = light.getLastKnownLightState();
+				lightStates.put(light.getUniqueId(), new State(lastKnownLightState));
+				LOGGER.debug("Light {} -{} is {}\n  {}", light.getName(), light.getUniqueId(),
+					(lastKnownLightState.isOn() ? "AN" : "AUS"),
+					lightStates.get(light.getUniqueId()));
 				safeSleep(50);
 		});
 		return lightStates;
@@ -104,24 +105,21 @@ public class HueRunner {
 
 	private static void resetAllLights(
 		PHBridge bridge, List<PHLight> allLights,
-		Map<String, PHLightState> lightStates
+		Map<String, State> lightStates
 	) {
 		allLights
 			.stream()
 			.filter(light -> light.getName().contains(HueProperties.getLightFilter()))
 			.forEach(light -> {
 				PHLightState lightState = new PHLightState();
-				lightState.setX(lightStates.get(light.getUniqueId()).getX());
-				lightState.setY(lightStates.get(light.getUniqueId()).getY());
+				final State state = lightStates.get(light.getUniqueId());
+				lightState.setX(state.x);
+				lightState.setY(state.y);
+				lightState.setOn(state.on);
+				lightState.setBrightness(state.brightness);
 				bridge.updateLightState(light, lightState);
-				final Boolean wasOn = lightStates.get(light.getUniqueId()).isOn();
-				if(!wasOn) {
-					lightState = new PHLightState();
-					lightState.setOn(false);
-					bridge.updateLightState(light, lightState);
-					LOGGER.debug("Light reset and switch off {} -{}", light.getName(), light.getUniqueId());
-				} else
-					LOGGER.debug("Light reset {} -{}", light.getName(), light.getUniqueId());
+				LOGGER.debug("Light reset {} -{}\n  {}", light.getName(), light.getUniqueId(),
+					lightStates.get(light.getUniqueId()));
 				safeSleep(50);
 			});
 	}
@@ -136,7 +134,7 @@ public class HueRunner {
                 .filter(light -> light.getName().contains(lightsNameFilter))
                 .forEach(light -> {
                     LOGGER.debug("  Light {}", light.getName());
-                    PHLightState lightState = new PHLightState();
+                    final PHLightState lightState = new PHLightState();
                     lightState.setOn(true);
                     float[] xy;
                     if (l[0] % 2 > 0)
