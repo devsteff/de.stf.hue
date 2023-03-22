@@ -1,10 +1,11 @@
 package de.stf.hue;
 
-import com.philips.lighting.hue.listener.PHLightListener;
 import com.philips.lighting.hue.sdk.PHAccessPoint;
 import com.philips.lighting.hue.sdk.PHHueSDK;
 import com.philips.lighting.hue.sdk.utilities.PHUtilities;
 import com.philips.lighting.model.*;
+import de.stf.hue.config.HueProperties;
+import de.stf.hue.model.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,13 +112,7 @@ public class HueRunner {
 			.stream()
 			.filter(light -> light.getName().contains(HueProperties.getLightFilter()))
 			.forEach(light -> {
-				PHLightState lightState = new PHLightState();
-				final State state = lightStates.get(light.getUniqueId());
-				lightState.setX(state.x);
-				lightState.setY(state.y);
-				lightState.setOn(state.on);
-				lightState.setBrightness(state.brightness);
-				bridge.updateLightState(light, lightState);
+				bridge.updateLightState(light, lightStates.get(light.getUniqueId()).asPHLightState());
 				LOGGER.debug("Light reset {} -{}\n  {}", light.getName(), light.getUniqueId(),
 					lightStates.get(light.getUniqueId()));
 				safeSleep(50);
@@ -126,7 +121,7 @@ public class HueRunner {
 
     private static void flicker(PHBridge bridge, List<PHLight> allLights, String lightsNameFilter)
         throws InterruptedException {
-        for (int s = 0; s < 9; s++) { //Loops
+        for (int s = 0; s < 5; s++) { //Loops
             final int[] l = { s };
             LOGGER.debug("Loop {} for lights containing '{}", l[0], lightsNameFilter);
             allLights

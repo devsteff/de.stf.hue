@@ -1,18 +1,27 @@
-package de.stf.hue;
+package de.stf.hue.model;
 
 import com.philips.lighting.model.PHLightState;
 
 public class State {
-	float x;
-	float y;
-	boolean on;
-	int brightness;
+	public float x;
+	public float y;
+	public boolean on;
+	public int brightness;
 
-	State(PHLightState org) {
+	public State(PHLightState org) {
 		this.x = org.getX();
 		this.y = org.getY();
 		this.on = org.isOn();
 		this.brightness = org.getBrightness();
+	}
+
+	public PHLightState asPHLightState() {
+		final PHLightState phls = new PHLightState();
+		phls.setOn(on);
+		phls.setX(x);
+		phls.setY(y);
+		phls.setBrightness(brightness);
+		return phls;
 	}
 
 	@Override

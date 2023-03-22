@@ -1,4 +1,4 @@
-package de.stf.hue;
+package de.stf.hue.config;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

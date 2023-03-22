@@ -7,6 +7,7 @@ import com.philips.lighting.hue.sdk.PHSDKListener;
 import com.philips.lighting.model.PHBridge;
 import com.philips.lighting.model.PHHueError;
 import com.philips.lighting.model.PHHueParsingError;
+import de.stf.hue.config.HueProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
